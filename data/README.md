@@ -1,0 +1,1 @@
+## This sub-directory contains the video transcripts and their embeddings.

@@ -1,0 +1,45 @@
+name: run src/main.py
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 4 * * *" # run every day at 4:30 am; resource: https://crontab.guru/
+
+jobs:
+  youtube-video-etl-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo content
+        uses: actions/checkout@v4 # checkout the repository content to github runner
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # install the Python version that this project is using
+          cache: 'pip' # cache all Python libraries that are installed via pip
+
+      - name: Install dependencies
+        run: pip install -q -r requirements.txt --progress-bar off
+
+      - name: Execute pipeline
+        env: 
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python src/main.py
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git config user.name 'github-actions'
+          git config user.email 'github-actions@github.com'
+          git add .
+          git diff --staged --quiet || echo "changes==true" >> $GITHUB_ENV
+        
+      - name: Commit and push
+        if: env.changes == 'true'
+        run: |
+          git commit -m "updating ./data/transcript_embeddings.parquet"
+          git push
