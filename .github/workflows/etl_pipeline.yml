@@ -3,6 +3,7 @@ name: youtube-video-etl-pipeline-workflow
 on:
   schedule:
     - cron: "30 4 * * *" # this workflow will run every day at 4:30 am; https://crontab.guru/
+  workflow_dispatch: # allows for this workflow to be manually executed from GitHub
 
 jobs:
   run-pipeline:
