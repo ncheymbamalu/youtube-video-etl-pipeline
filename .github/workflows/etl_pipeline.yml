@@ -1,10 +1,8 @@
-name: run src/main.py
+name: youtube-video-etl-pipeline-workflow
 
 on:
-  push:
-  workflow_dispatch:
   schedule:
-    - cron: "30 4 * * *" # run every day at 4:30 am; resource: https://crontab.guru/
+    - cron: "30 4 * * *" # this workflow will run every day at 4:30 am; https://crontab.guru/
 
 jobs:
   run-pipeline:
@@ -18,11 +16,12 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # install the Python version that this project is using
+          python-version: '3.10' # install the version of Python this project is using
           cache: 'pip' # cache all Python libraries that are installed via pip
 
       - name: Install dependencies
         run: |
+          pip install -U pip
           pip install -q -r requirements.txt --progress-bar off
           pip install -e .
 
@@ -43,5 +42,5 @@ jobs:
       - name: Commit and push
         if: env.changes == 'true'
         run: |
-          git commit -m "updating ./data/transcript_embeddings.parquet"
+          git commit -m "updating the YouTube video transcripts and their embeddings"
           git push

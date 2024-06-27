@@ -1,1 +1,1 @@
-## This sub-directory contains the video transcripts and their embeddings.
+## This sub-directory contains the YouTube video transcripts and their embeddings.
